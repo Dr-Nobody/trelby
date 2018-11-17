@@ -936,13 +936,36 @@ def writeToFile(filename, data, frame):
         return False
 
 def removeTempFiles(prefix):
-    files = glob.glob(tempfile.gettempdir() + "/%s*" % prefix)
+    if prefix != "":
+        files = glob.glob(tempfile.gettempdir() + "/%s*" % prefix)
+    else:
+        files = glob.glob(tempfile.gettempdir() + "/*.trelby")
 
     for fn in files:
         try:
             os.remove(fn)
         except OSError:
             continue
+
+def createBackup(filename):
+
+    try:
+        f = open(misc.toPath(filename), "r")
+        try:
+            data = f.read()
+        finally:
+            f.close()
+
+        f = open(misc.toPath(filename + ".bak"), "w+")
+        try:
+            f.write(data)
+        finally:
+            f.close()
+
+        return True
+    except IOError, (errno, strerror):
+        #wx.MessageBox("Error writing file '%s': %s" % (filename, strerror), "Error", wx.OK, "")
+        return False
 
 # return True if given file exists.
 def fileExists(filename):

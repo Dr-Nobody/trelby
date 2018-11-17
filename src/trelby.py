@@ -36,6 +36,7 @@ import signal
 import sys
 import time
 import wx
+import tempfile
 
 from functools import partial
 
@@ -353,7 +354,7 @@ class MyCtrl(wx.Control):
             self.setDisplayName(os.path.basename(fileName))
         else:
             self.setDisplayName(u"untitled")
-
+        
         self.setTabText()
         mainFrame.setTitle(self.fileNameDisplay)
 
@@ -1319,6 +1320,12 @@ class MyCtrl(wx.Control):
         pass
 
     def OnKeyChar(self, ev):
+        # Add * character on title to see quickly if modified file or not
+        
+        if self.sp.isModified():
+            mainFrame.setTitle(self.panel.ctrl.fileNameDisplay + "*")
+            mainFrame.setTabText(self.panel, self.panel.ctrl.fileNameDisplay + "*")
+
         kc = ev.GetKeyCode()
 
         cs = screenplay.CommandState()
@@ -1343,11 +1350,11 @@ class MyCtrl(wx.Control):
             if addChar:
                 cs.char = chr(kc)
 
-                if opts.isTest and (cs.char == "å"):
+                if opts.isTest and (cs.char == "ï¿½"):
                     self.loadFile(u"sample.trelby")
-                elif opts.isTest and (cs.char == "¤"):
+                elif opts.isTest and (cs.char == "ï¿½"):
                     self.cmdTest(cs)
-                elif opts.isTest and (cs.char == "½"):
+                elif opts.isTest and (cs.char == "ï¿½"):
                     self.cmdSpeedTest(cs)
                 else:
                     self.sp.addCharCmd(cs)
@@ -1969,6 +1976,29 @@ class MyFrame(wx.Frame):
     def init(self):
         self.updateKbdCommands()
         self.panel = self.createNewPanel()
+        self.panel.ctrl.fileName = ""
+        self.temporaryFile = False
+        
+        # Timer for autosaving
+        def on_timer(event):
+            
+            if self.panel.ctrl.fileName == "":
+                t = tempfile.NamedTemporaryFile()
+                self.panel.ctrl.fileName = t.name
+                self.temporaryFile = True # save in C:\Users\<user>\AppData\Local\Temp (Windows) or /tmp/ (Linux)
+            
+            if self.temporaryFile == False:
+                if util.createBackup(self.panel.ctrl.fileName) == False: # create backup file, then save original file
+                    wx.MessageBox("Error in writing backup copy in %s" % self.panel.ctrl.fileName, "Warning", wx.OK, self)
+
+            self.panel.ctrl.saveFile(self.panel.ctrl.fileName)   # save file
+            mainFrame.setTitle(self.panel.ctrl.fileNameDisplay) # delete the '*' on title
+            
+        TIMER_ID = 100  # pick a number
+        self.timer = wx.Timer(self.panel, TIMER_ID)  # message will be sent to the panel
+        self.timer.Start(2 * 60 * 1000)  # 2 * 60 * 1000 milliseconds = 2 minutes
+        wx.EVT_TIMER(self.panel, TIMER_ID, on_timer)  # call the on_timer function
+        
 
     def mySetIcons(self):
         wx.Image_AddHandler(wx.PNGHandler())
@@ -2183,6 +2213,7 @@ class MyFrame(wx.Frame):
         self.panel.ctrl.SetFocus()
         self.panel.ctrl.updateCommon()
         self.setTitle(self.panel.ctrl.fileNameDisplay)
+
 
     def selectScript(self, toNext):
         current = self.tabCtrl.getSelectedPageIndex()
@@ -2527,14 +2558,19 @@ class MyFrame(wx.Frame):
 
     def OnCloseWindow(self, event):
         doExit = True
-        if event.CanVeto() and self.isModifications():
+        # TODO
+        if (event.CanVeto() and self.isModifications()) or self.temporaryFile:
             if wx.MessageBox("You have unsaved changes. Are\n"
                              "you sure you want to exit?", "Confirm",
                              wx.YES_NO | wx.NO_DEFAULT, self) == wx.NO:
+                
                 doExit = False
 
         if doExit:
             util.writeToFile(gd.stateFilename, gd.save(), self)
+            # Delete the temp files
+            
+            util.removeTempFiles("")
             util.removeTempFiles(misc.tmpPrefix)
             self.Destroy()
             myApp.ExitMainLoop()
@@ -2642,6 +2678,8 @@ class MyApp(wx.App):
             win = splash.SplashWindow(mainFrame, cfgGl.splashTime * 1000)
             win.Show()
             win.Raise()
+
+
 
         return True
 
