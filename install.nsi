@@ -193,6 +193,7 @@ Section Uninstall
   Delete "$SMPROGRAMS\Trelby\Manual.lnk"
 
   RMDir /r "$INSTDIR\resources"
+  RMDir /r "$INSTDIR\locales"
   RMDir "$SMPROGRAMS\Trelby"
   RMDir "$INSTDIR"
 

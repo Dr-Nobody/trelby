@@ -9,6 +9,17 @@ import os.path
 
 import wx
 
+# Internationalization
+import gettext
+import locale
+
+current_locale, encoding = locale.getdefaultlocale()
+
+fr = gettext.translation('base', localedir='locales', languages=[current_locale])
+fr.install()
+def _(s):
+    return unicode(fr.gettext(s), "utf8")
+
 # stupid hack to get correct window modality stacking for dialogs
 cfgFrame = None
 
@@ -89,24 +100,24 @@ class CfgDlg(wx.Dialog):
         hsizer.Add(self.panel, 1, wx.EXPAND)
 
         if isGlobal:
-            self.SetTitle("Settings dialog")
+            self.SetTitle(_("Settings dialog"))
 
-            self.AddPage(GlobalAboutPanel, "About")
-            self.AddPage(ColorsPanel, "Colors")
-            self.AddPage(DisplayPanel, "Display")
-            self.AddPage(ElementsGlobalPanel, "Elements")
-            self.AddPage(KeyboardPanel, "Keyboard")
-            self.AddPage(MiscPanel, "Misc")
+            self.AddPage(GlobalAboutPanel, _("About"))
+            self.AddPage(ColorsPanel, _("Colors"))
+            self.AddPage(DisplayPanel, _("Display"))
+            self.AddPage(ElementsGlobalPanel, _("Elements"))
+            self.AddPage(KeyboardPanel, _("Keyboard"))
+            self.AddPage(MiscPanel, _("Misc"))
         else:
-            self.SetTitle("Script settings dialog")
+            self.SetTitle(_("Script settings dialog"))
 
-            self.AddPage(ScriptAboutPanel, "About")
-            self.AddPage(ElementsPanel, "Elements")
-            self.AddPage(FormattingPanel, "Formatting")
-            self.AddPage(PaperPanel, "Paper")
-            self.AddPage(PDFPanel, "PDF")
-            self.AddPage(PDFFontsPanel, "PDF/Fonts")
-            self.AddPage(StringsPanel, "Strings")
+            self.AddPage(ScriptAboutPanel, _("About"))
+            self.AddPage(ElementsPanel, _("Elements"))
+            self.AddPage(FormattingPanel, _("Formatting"))
+            self.AddPage(PaperPanel, _("Paper"))
+            self.AddPage(PDFPanel, _("PDF"))
+            self.AddPage(PDFFontsPanel, _("PDF/Fonts"))
+            self.AddPage(StringsPanel, _("Strings"))
 
         size = self.listbook.GetContainingSize()
 
@@ -127,10 +138,10 @@ class CfgDlg(wx.Dialog):
 
         hsizer.Add((1, 1), 1)
 
-        applyBtn = gutil.createStockButton(self, "Apply")
+        applyBtn = gutil.createStockButton(self, _("Apply"))
         hsizer.Add(applyBtn, 0, wx.ALL, 5)
 
-        cancelBtn = gutil.createStockButton(self, "Cancel")
+        cancelBtn = gutil.createStockButton(self, _("Cancel"))
         hsizer.Add(cancelBtn, 0, wx.ALL, 5)
 
         okBtn = gutil.createStockButton(self, "OK")
@@ -180,7 +191,7 @@ class AboutPanel(wx.Panel):
 class GlobalAboutPanel(AboutPanel):
     def __init__(self, parent, id, cfg):
         s = \
-"""This is the config dialog for global settings, which means things
+_("""This is the config dialog for global settings, which means things
 that affect the user interface of the program like interface colors,
 keyboard shortcuts, display fonts, and so on.
 
@@ -188,14 +199,14 @@ The settings here are independent of any script being worked on,
 and unique to this computer.
 
 None of the settings here have any effect on the generated PDF
-output for a script. See Script/Settings for those."""
+output for a script. See Script/Settings for those.""")
 
         AboutPanel.__init__(self, parent, id, cfg, s)
 
 class ScriptAboutPanel(AboutPanel):
     def __init__(self, parent, id, cfg):
         s = \
-"""This is the config dialog for script format settings, which means
+_("""This is the config dialog for script format settings, which means
 things that affect the generated PDF output of a script. Things like
 paper size, indendation/line widths/font styles for the different
 element types, and so on.
@@ -203,7 +214,7 @@ element types, and so on.
 The settings here are saved within the screenplay itself.
 
 If you're looking for the user interface settings (colors, keyboard
-shortcuts, etc.), those are found in File/Settings."""
+shortcuts, etc.), those are found in File/Settings.""")
 
         AboutPanel.__init__(self, parent, id, cfg, s)
 
@@ -237,12 +248,12 @@ class DisplayPanel(wx.Panel):
         hsizer.Add(self.errText, 0, wx.ALIGN_CENTER_VERTICAL)
         vsizer.Add(hsizer, 0, wx.BOTTOM, 20)
 
-        vsizer.Add(wx.StaticText(self, -1, "The settings below apply only"
-                                " to 'Draft' view mode."), 0, wx.BOTTOM, 15)
+        vsizer.Add(wx.StaticText(self, -1, _("The settings below apply only"
+                                " to 'Draft' view mode.")), 0, wx.BOTTOM, 15)
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        hsizer.Add(wx.StaticText(self, -1, "Row spacing:"), 0,
+        hsizer.Add(wx.StaticText(self, -1,_( "Row spacing:")), 0,
                    wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10)
 
         self.spacingEntry = wx.SpinCtrl(self, -1)
@@ -256,7 +267,7 @@ class DisplayPanel(wx.Panel):
 
         vsizer.Add(hsizer, 0, wx.EXPAND | wx.BOTTOM, 15)
 
-        self.pbRb = wx.RadioBox(self, -1, "Page break lines to show",
+        self.pbRb = wx.RadioBox(self, -1, _("Page break lines to show"),
             style = wx.RA_SPECIFY_COLS, majorDimension = 1,
             choices = [ "None", "Normal", "Normal + unadjusted   " ])
         vsizer.Add(self.pbRb)
@@ -298,8 +309,8 @@ class DisplayPanel(wx.Panel):
                 self.cfg2gui()
                 self.updateFontLb()
             else:
-                wx.MessageBox("The selected font is not fixed width and"
-                              " can not be used.", "Error", wx.OK, cfgFrame)
+                wx.MessageBox(_("The selected font is not fixed width and"
+                              " can not be used."), _("Error"), wx.OK, cfgFrame)
 
         dlg.Destroy()
 
@@ -326,10 +337,10 @@ class DisplayPanel(wx.Panel):
             widths.add(util.getTextExtent(f, "iw")[0])
 
         if len(widths) > 1:
-            self.errText.SetLabel("Fonts have different widths")
+            self.errText.SetLabel(_("Fonts have different widths"))
             self.errText.SetForegroundColour((255, 0, 0))
         else:
-            self.errText.SetLabel("Fonts have matching widths")
+            self.errText.SetLabel(_("Fonts have matching widths"))
             self.errText.SetForegroundColour(self.origColor)
 
     def cfg2gui(self):
@@ -345,8 +356,8 @@ class ElementsPanel(wx.Panel):
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        hsizer.Add(wx.StaticText(self, -1, "Element:"), 0,
-                   wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10)
+        hsizer.Add(wx.StaticText(self, -1, _("Element:"), 0,
+                   wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10))
 
         self.elementsCombo = wx.ComboBox(self, -1, style = wx.CB_READONLY)
 
@@ -719,7 +730,7 @@ class PaperPanel(wx.Panel):
 
     def setLines(self):
         self.cfg.recalc(False)
-        self.linesLabel.SetLabel("Lines per page: %d" % self.cfg.linesOnPage)
+        self.linesLabel.SetLabel(_("Lines per page") + ": %d" % self.cfg.linesOnPage)
 
     def OnPaperCombo(self, event):
         w, h = self.paperCombo.GetClientData(self.paperCombo.GetSelection())
@@ -807,8 +818,8 @@ class FormattingPanel(wx.Panel):
         vsizer = wx.BoxSizer(wx.VERTICAL)
 
         vsizer.Add(wx.StaticText(self, -1,
-            "Leave at least this many lines at the end of a page when\n"
-            "breaking in the middle of an element:"), 0, wx.BOTTOM, 5)
+            _("Leave at least this many lines at the end of a page when\n"
+            "breaking in the middle of an element:")), 0, wx.BOTTOM, 5)
 
         gsizer = wx.FlexGridSizer(2, 2, 5, 0)
 
@@ -922,22 +933,22 @@ class KeyboardPanel(wx.Panel):
 
         vsizer2 = wx.BoxSizer(wx.VERTICAL)
 
-        vsizer2.Add(wx.StaticText(self, -1, "Keys:"))
+        vsizer2.Add(wx.StaticText(self, -1, _("Keys:")))
 
         self.keysLb = wx.ListBox(self, -1, size = (150, 60))
         vsizer2.Add(self.keysLb, 1, wx.BOTTOM, 10)
 
-        btn = wx.Button(self, -1, "Add")
+        btn = wx.Button(self, -1, _("Add"))
         wx.EVT_BUTTON(self, btn.GetId(), self.OnAdd)
         vsizer2.Add(btn, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10)
         self.addBtn = btn
 
-        btn = wx.Button(self, -1, "Delete")
+        btn = wx.Button(self, -1, _("Delete"))
         wx.EVT_BUTTON(self, btn.GetId(), self.OnDelete)
         vsizer2.Add(btn, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10)
         self.deleteBtn = btn
 
-        vsizer2.Add(wx.StaticText(self, -1, "Description:"))
+        vsizer2.Add(wx.StaticText(self, -1, _("Description:")))
 
         self.descEntry = wx.TextCtrl(self, -1,
             style = wx.TE_MULTILINE | wx.TE_READONLY, size = (150, 75))
@@ -947,7 +958,7 @@ class KeyboardPanel(wx.Panel):
 
         vsizer.Add(hsizer)
 
-        vsizer.Add(wx.StaticText(self, -1, "Conflicting keys:"), 0, wx.TOP, 10)
+        vsizer.Add(wx.StaticText(self, -1, _("Conflicting keys:")), 0, wx.TOP, 10)
 
         self.conflictsEntry = wx.TextCtrl(self, -1,
             style = wx.TE_MULTILINE | wx.TE_READONLY, size = (50, 75))
@@ -975,14 +986,14 @@ class KeyboardPanel(wx.Panel):
         if key:
             kint = key.toInt()
             if kint in self.cmd.keys:
-                wx.MessageBox("The key is already bound to this command.",
-                              "Error", wx.OK, cfgFrame)
+                wx.MessageBox(_("The key is already bound to this command."),
+                              _("Error"), wx.OK, cfgFrame)
 
                 return
 
             if key.isValidInputChar():
-                wx.MessageBox("You can't bind input characters to commands.",
-                              "Error", wx.OK, cfgFrame)
+                wx.MessageBox(_("You can't bind input characters to commands."),
+                              _("Error"), wx.OK, cfgFrame)
 
                 return
 
@@ -1026,7 +1037,7 @@ class MiscPanel(wx.Panel):
         vsizer = wx.BoxSizer(wx.VERTICAL)
 
         bsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1,
-            "Default script directory"), wx.VERTICAL)
+            _("Default script directory")), wx.VERTICAL)
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -1034,7 +1045,7 @@ class MiscPanel(wx.Panel):
         hsizer.Add(self.scriptDirEntry, 1,
                    wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 10)
 
-        btn = wx.Button(self, -1, "Browse")
+        btn = wx.Button(self, -1, _("Browse"))
         wx.EVT_BUTTON(self, btn.GetId(), self.OnBrowse)
         hsizer.Add(btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 10)
 
@@ -1043,21 +1054,21 @@ class MiscPanel(wx.Panel):
         vsizer.Add(bsizer, 0, wx.EXPAND | wx.BOTTOM, 10)
 
         bsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1,
-            "PDF viewer application"), wx.VERTICAL)
+            _("PDF viewer application")), wx.VERTICAL)
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        hsizer.Add(wx.StaticText(self, -1, "Path:"), 0,
+        hsizer.Add(wx.StaticText(self, -1, _("Path:")), 0,
                    wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10)
 
         self.progEntry = wx.TextCtrl(self, -1)
         hsizer.Add(self.progEntry, 1, wx.ALIGN_CENTER_VERTICAL)
 
-        btn = wx.Button(self, -1, "Browse")
+        btn = wx.Button(self, -1, _("Browse"))
         wx.EVT_BUTTON(self, btn.GetId(), self.OnBrowsePDF)
         hsizer.Add(btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 10)
 
-        btn = wx.Button(self, -1, "Guess")
+        btn = wx.Button(self, -1, _("Guess"))
         wx.EVT_BUTTON(self, btn.GetId(), self.OnGuessPDF)
         hsizer.Add(btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 10)
 
@@ -1065,7 +1076,7 @@ class MiscPanel(wx.Panel):
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        hsizer.Add(wx.StaticText(self, -1, "Arguments:"), 0,
+        hsizer.Add(wx.StaticText(self, -1, _("Arguments:")), 0,
                    wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10)
 
         self.argsEntry = wx.TextCtrl(self, -1)

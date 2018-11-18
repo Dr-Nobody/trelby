@@ -38,6 +38,18 @@ import time
 import wx
 import tempfile
 
+# Internationalization
+import gettext
+import locale
+
+current_locale, encoding = locale.getdefaultlocale()
+
+fr = gettext.translation('base', localedir='locales', languages=[current_locale])
+fr.install()
+# here is where the magic happens
+def _(s):
+    return unicode(fr.gettext(s), "utf8")
+
 from functools import partial
 
 #keycodes
@@ -353,7 +365,7 @@ class MyCtrl(wx.Control):
         if fileName:
             self.setDisplayName(os.path.basename(fileName))
         else:
-            self.setDisplayName(u"untitled")
+            self.setDisplayName(_("untitled"))
         
         self.setTabText()
         mainFrame.setTitle(self.fileNameDisplay)
@@ -1673,68 +1685,69 @@ class MyFrame(wx.Frame):
         self.mySetIcons()
         self.allocIds()
 
+
         fileMenu = wx.Menu()
-        fileMenu.Append(ID_FILE_NEW, "&New\tCTRL-N")
-        fileMenu.Append(ID_FILE_OPEN, "&Open...\tCTRL-O")
-        fileMenu.Append(ID_FILE_SAVE, "&Save\tCTRL-S")
-        fileMenu.Append(ID_FILE_SAVE_AS, "Save &As...")
-        fileMenu.Append(ID_FILE_CLOSE, "&Close\tCTRL-W")
-        fileMenu.Append(ID_FILE_REVERT, "&Revert")
+        fileMenu.Append(ID_FILE_NEW, "&"+_("New") + "\tCTRL-N")
+        fileMenu.Append(ID_FILE_OPEN, "&"+_("Open") + "...\tCTRL-O")
+        fileMenu.Append(ID_FILE_SAVE, "&"+_("Save") + "\tCTRL-S")
+        fileMenu.Append(ID_FILE_SAVE_AS, ""+_("Save &As") + "...")
+        fileMenu.Append(ID_FILE_CLOSE, "&"+_("Close") + "\tCTRL-W")
+        fileMenu.Append(ID_FILE_REVERT, "&"+_("Revert") + "")
         fileMenu.AppendSeparator()
-        fileMenu.Append(ID_FILE_IMPORT, "&Import...")
-        fileMenu.Append(ID_FILE_EXPORT, "&Export...")
+        fileMenu.Append(ID_FILE_IMPORT, "&"+_("Import") + "...")
+        fileMenu.Append(ID_FILE_EXPORT, "&"+_("Export") + "...")
         fileMenu.AppendSeparator()
-        fileMenu.Append(ID_FILE_PRINT, "&Print (via PDF)\tCTRL-P")
+        fileMenu.Append(ID_FILE_PRINT, "&"+_("Print (via PDF)") + "\tCTRL-P")
         fileMenu.AppendSeparator()
 
         tmp = wx.Menu()
 
-        tmp.Append(ID_SETTINGS_CHANGE, "&Change...")
+        tmp.Append(ID_SETTINGS_CHANGE, "&"+_("Change")+"...")
         tmp.AppendSeparator()
-        tmp.Append(ID_SETTINGS_LOAD, "Load...")
-        tmp.Append(ID_SETTINGS_SAVE_AS, "Save as...")
+        tmp.Append(ID_SETTINGS_LOAD, _("Load")+"...")
+        tmp.Append(ID_SETTINGS_SAVE_AS, _("Save as")+"...")
         tmp.AppendSeparator()
-        tmp.Append(ID_SETTINGS_SC_DICT, "&Spell checker dictionary...")
+        tmp.Append(ID_SETTINGS_SC_DICT, "&"+_("Spell checker dictionary")+"...")
         settingsMenu = tmp
-
-        fileMenu.AppendMenu(ID_FILE_SETTINGS, "Se&ttings", tmp)
+        
+        fileMenu.AppendMenu(ID_FILE_SETTINGS, _("Se&ttings"), tmp)
 
         fileMenu.AppendSeparator()
         # "most recently used" list comes in here
         fileMenu.AppendSeparator()
-        fileMenu.Append(ID_FILE_EXIT, "E&xit\tCTRL-Q")
+        fileMenu.Append(ID_FILE_EXIT, _("E&xit") + "\tCTRL-Q")
 
         editMenu = wx.Menu()
-        editMenu.Append(ID_EDIT_UNDO, "&Undo\tCTRL-Z")
-        editMenu.Append(ID_EDIT_REDO, "&Redo\tCTRL-Y")
+        editMenu.Append(ID_EDIT_UNDO, _("&Undo") + "\tCTRL-Z")
+        editMenu.Append(ID_EDIT_REDO, _("&Redo") + "\tCTRL-Y")
         editMenu.AppendSeparator()
-        editMenu.Append(ID_EDIT_CUT, "Cu&t\tCTRL-X")
-        editMenu.Append(ID_EDIT_COPY, "&Copy\tCTRL-C")
-        editMenu.Append(ID_EDIT_PASTE, "&Paste\tCTRL-V")
+        editMenu.Append(ID_EDIT_CUT, _("Cu&t") + "\tCTRL-X")
+        editMenu.Append(ID_EDIT_COPY, _("&Copy") + "\tCTRL-C")
+        editMenu.Append(ID_EDIT_PASTE, _("&Paste") + "\tCTRL-V")
         editMenu.AppendSeparator()
 
         tmp = wx.Menu()
-        tmp.Append(ID_EDIT_COPY_TO_CB, "&Unformatted")
-        tmp.Append(ID_EDIT_COPY_TO_CB_FMT, "&Formatted")
+        tmp.Append(ID_EDIT_COPY_TO_CB, _("&Unformatted"))
+        tmp.Append(ID_EDIT_COPY_TO_CB_FMT, _("&Formatted"))
 
-        editMenu.AppendMenu(ID_EDIT_COPY_SYSTEM, "C&opy (system)", tmp)
-        editMenu.Append(ID_EDIT_PASTE_FROM_CB, "P&aste (system)")
+        editMenu.AppendMenu(ID_EDIT_COPY_SYSTEM, _("C&opy (system)"), tmp)
+        editMenu.Append(ID_EDIT_PASTE_FROM_CB, _("P&aste (system)"))
         editMenu.AppendSeparator()
-        editMenu.Append(ID_EDIT_SELECT_SCENE, "&Select scene")
-        editMenu.Append(ID_EDIT_SELECT_ALL, "Select a&ll")
-        editMenu.Append(ID_EDIT_GOTO_PAGE, "&Goto page...\tCTRL-G")
-        editMenu.Append(ID_EDIT_GOTO_SCENE, "Goto sc&ene...\tALT-G")
+        editMenu.Append(ID_EDIT_SELECT_SCENE, _("&Select scene"))
+        editMenu.Append(ID_EDIT_SELECT_ALL, _("Select a&ll"))
+        editMenu.Append(ID_EDIT_GOTO_PAGE, _("&Goto page") + "...\tCTRL-G")
+        editMenu.Append(ID_EDIT_GOTO_SCENE, _("Goto sc&ene") + "...\tALT-G")
         editMenu.AppendSeparator()
-        editMenu.Append(ID_EDIT_INSERT_NBSP, "Insert non-breaking space")
+        editMenu.Append(ID_EDIT_INSERT_NBSP, _("Insert non-breaking space"))
         editMenu.AppendSeparator()
-        editMenu.Append(ID_EDIT_FIND, "&Find && Replace...\tCTRL-F")
+        editMenu.Append(ID_EDIT_FIND, _("&Find && Replace") + "...\tCTRL-F")
         editMenu.AppendSeparator()
-        editMenu.Append(ID_EDIT_DELETE_ELEMENTS, "&Delete elements...")
+        editMenu.Append(ID_EDIT_DELETE_ELEMENTS, _("&Delete elements") + "...")
 
         viewMenu = wx.Menu()
-        viewMenu.AppendRadioItem(ID_VIEW_STYLE_DRAFT, "&Draft")
-        viewMenu.AppendRadioItem(ID_VIEW_STYLE_LAYOUT, "&Layout")
-        viewMenu.AppendRadioItem(ID_VIEW_STYLE_SIDE_BY_SIDE, "&Side by side")
+        viewMenu.AppendRadioItem(ID_VIEW_STYLE_DRAFT, _("&Draft"))
+        viewMenu.AppendRadioItem(ID_VIEW_STYLE_LAYOUT, _("&Layout"))
+        viewMenu.AppendRadioItem(ID_VIEW_STYLE_SIDE_BY_SIDE, _("&Side by side"))
 
         if gd.viewMode == VIEWMODE_DRAFT:
             viewMenu.Check(ID_VIEW_STYLE_DRAFT, True)
@@ -1744,57 +1757,57 @@ class MyFrame(wx.Frame):
             viewMenu.Check(ID_VIEW_STYLE_SIDE_BY_SIDE, True)
 
         viewMenu.AppendSeparator()
-        viewMenu.AppendCheckItem(ID_VIEW_SHOW_FORMATTING, "&Show formatting")
-        viewMenu.Append(ID_VIEW_FULL_SCREEN, "&Fullscreen\tF11")
+        viewMenu.AppendCheckItem(ID_VIEW_SHOW_FORMATTING, _("&Show formatting"))
+        viewMenu.Append(ID_VIEW_FULL_SCREEN, _("&Fullscreen") + "\tF11")
 
         scriptMenu = wx.Menu()
-        scriptMenu.Append(ID_SCRIPT_FIND_ERROR, "&Find next error")
-        scriptMenu.Append(ID_SCRIPT_PAGINATE, "&Paginate")
+        scriptMenu.Append(ID_SCRIPT_FIND_ERROR, _("&Find next error"))
+        scriptMenu.Append(ID_SCRIPT_PAGINATE, _("&Paginate"))
         scriptMenu.AppendSeparator()
-        scriptMenu.Append(ID_SCRIPT_AUTO_COMPLETION, "&Auto-completion...")
-        scriptMenu.Append(ID_SCRIPT_HEADERS, "&Headers...")
-        scriptMenu.Append(ID_SCRIPT_LOCATIONS, "&Locations...")
-        scriptMenu.Append(ID_SCRIPT_TITLES, "&Title pages...")
-        scriptMenu.Append(ID_SCRIPT_SC_DICT, "&Spell checker dictionary...")
+        scriptMenu.Append(ID_SCRIPT_AUTO_COMPLETION, _("&Auto-completion") + "...")
+        scriptMenu.Append(ID_SCRIPT_HEADERS, _("&Headers") + "...")
+        scriptMenu.Append(ID_SCRIPT_LOCATIONS, _("&Locations") + "...")
+        scriptMenu.Append(ID_SCRIPT_TITLES, _("&Title pages") + "...")
+        scriptMenu.Append(ID_SCRIPT_SC_DICT, _("&Spell checker dictionary") + "...")
         scriptMenu.AppendSeparator()
 
         tmp = wx.Menu()
 
-        tmp.Append(ID_SCRIPT_SETTINGS_CHANGE, "&Change...")
+        tmp.Append(ID_SCRIPT_SETTINGS_CHANGE, _("&Change") + "...")
         tmp.AppendSeparator()
-        tmp.Append(ID_SCRIPT_SETTINGS_LOAD, "&Load...")
-        tmp.Append(ID_SCRIPT_SETTINGS_SAVE_AS, "&Save as...")
-        scriptMenu.AppendMenu(ID_SCRIPT_SETTINGS, "&Settings", tmp)
+        tmp.Append(ID_SCRIPT_SETTINGS_LOAD, _("&Load") + "...")
+        tmp.Append(ID_SCRIPT_SETTINGS_SAVE_AS, _("&Save as") + "...")
+        scriptMenu.AppendMenu(ID_SCRIPT_SETTINGS, _("&Settings"), tmp)
         scriptSettingsMenu = tmp
 
         reportsMenu = wx.Menu()
-        reportsMenu.Append(ID_REPORTS_SCRIPT_REP, "Sc&ript report")
-        reportsMenu.Append(ID_REPORTS_LOCATION_REP, "&Location report...")
-        reportsMenu.Append(ID_REPORTS_SCENE_REP, "&Scene report...")
-        reportsMenu.Append(ID_REPORTS_CHARACTER_REP, "&Character report...")
-        reportsMenu.Append(ID_REPORTS_DIALOGUE_CHART, "&Dialogue chart...")
+        reportsMenu.Append(ID_REPORTS_SCRIPT_REP, _("Sc&ript report"))
+        reportsMenu.Append(ID_REPORTS_LOCATION_REP, _("&Location report") + "...")
+        reportsMenu.Append(ID_REPORTS_SCENE_REP, _("&Scene report") + "...")
+        reportsMenu.Append(ID_REPORTS_CHARACTER_REP, _("&Character report") + "...")
+        reportsMenu.Append(ID_REPORTS_DIALOGUE_CHART, _("&Dialogue chart") + "...")
 
         toolsMenu = wx.Menu()
-        toolsMenu.Append(ID_TOOLS_SPELL_CHECK, "&Spell checker...")
-        toolsMenu.Append(ID_TOOLS_NAME_DB, "&Name database...")
-        toolsMenu.Append(ID_TOOLS_CHARMAP, "&Character map...")
-        toolsMenu.Append(ID_TOOLS_COMPARE_SCRIPTS, "C&ompare scripts...")
-        toolsMenu.Append(ID_TOOLS_WATERMARK, "&Generate watermarked PDFs...")
+        toolsMenu.Append(ID_TOOLS_SPELL_CHECK, _("&Spell checker") + "...")
+        toolsMenu.Append(ID_TOOLS_NAME_DB, _("&Name database") + "...")
+        toolsMenu.Append(ID_TOOLS_CHARMAP, _("&Character map") + "...")
+        toolsMenu.Append(ID_TOOLS_COMPARE_SCRIPTS, _("C&ompare scripts") + "...")
+        toolsMenu.Append(ID_TOOLS_WATERMARK, _("&Generate watermarked PDFs") + "...")
 
         helpMenu = wx.Menu()
-        helpMenu.Append(ID_HELP_COMMANDS, "&Commands...")
-        helpMenu.Append(ID_HELP_MANUAL, "&Manual")
+        helpMenu.Append(ID_HELP_COMMANDS, _("&Commands") + "...")
+        helpMenu.Append(ID_HELP_MANUAL, _("&Manual"))
         helpMenu.AppendSeparator()
-        helpMenu.Append(ID_HELP_ABOUT, "&About...")
+        helpMenu.Append(ID_HELP_ABOUT, _("&About") + "...")
 
         self.menuBar = wx.MenuBar()
-        self.menuBar.Append(fileMenu, "&File")
-        self.menuBar.Append(editMenu, "&Edit")
-        self.menuBar.Append(viewMenu, "&View")
-        self.menuBar.Append(scriptMenu, "Scr&ipt")
-        self.menuBar.Append(reportsMenu, "&Reports")
-        self.menuBar.Append(toolsMenu, "Too&ls")
-        self.menuBar.Append(helpMenu, "&Help")
+        self.menuBar.Append(fileMenu, _("&File"))
+        self.menuBar.Append(editMenu, _("&Edit"))
+        self.menuBar.Append(viewMenu, _("&View"))
+        self.menuBar.Append(scriptMenu, _("Scr&ipt"))
+        self.menuBar.Append(reportsMenu, _("&Reports"))
+        self.menuBar.Append(toolsMenu, _("Too&ls"))
+        self.menuBar.Append(helpMenu, _("&Help"))
         self.SetMenuBar(self.menuBar)
 
         self.toolBar = self.CreateToolBar(wx.TB_VERTICAL)
@@ -1804,31 +1817,31 @@ class MyFrame(wx.Frame):
                 id, "", misc.getBitmap("resources/%s" % iconFilename),
                 shortHelp=toolTip)
 
-        addTB(ID_FILE_NEW, "new.png", "New script")
-        addTB(ID_FILE_OPEN, "open.png", "Open Script..")
-        addTB(ID_FILE_SAVE, "save.png", "Save..")
-        addTB(ID_FILE_SAVE_AS, "saveas.png", "Save as..")
-        addTB(ID_FILE_CLOSE, "close.png", "Close Script")
-        addTB(ID_TOOLBAR_SCRIPTSETTINGS, "scrset.png", "Script settings")
-        addTB(ID_FILE_PRINT, "pdf.png", "Print (via PDF)")
+        addTB(ID_FILE_NEW, "new.png", _("New script"))
+        addTB(ID_FILE_OPEN, "open.png", _("Open Script.."))
+        addTB(ID_FILE_SAVE, "save.png", _("Save.."))
+        addTB(ID_FILE_SAVE_AS, "saveas.png", _("Save as.."))
+        addTB(ID_FILE_CLOSE, "close.png", _("Close Script"))
+        addTB(ID_TOOLBAR_SCRIPTSETTINGS, "scrset.png", _("Script settings"))
+        addTB(ID_FILE_PRINT, "pdf.png", _("Print (via PDF)"))
 
         self.toolBar.AddSeparator()
 
-        addTB(ID_FILE_IMPORT, "import.png", "Import a text script")
-        addTB(ID_FILE_EXPORT, "export.png", "Export script")
+        addTB(ID_FILE_IMPORT, "import.png", _("Import a text script"))
+        addTB(ID_FILE_EXPORT, "export.png", _("Export script"))
 
         self.toolBar.AddSeparator()
 
-        addTB(ID_EDIT_UNDO, "undo.png", "Undo")
-        addTB(ID_EDIT_REDO, "redo.png", "Redo")
+        addTB(ID_EDIT_UNDO, "undo.png", _("Undo"))
+        addTB(ID_EDIT_REDO, "redo.png", _("Redo"))
 
         self.toolBar.AddSeparator()
 
-        addTB(ID_EDIT_FIND, "find.png", "Find / Replace")
-        addTB(ID_TOOLBAR_VIEWS, "layout.png", "View mode")
-        addTB(ID_TOOLBAR_REPORTS, "report.png", "Script reports")
-        addTB(ID_TOOLBAR_TOOLS, "tools.png", "Tools")
-        addTB(ID_TOOLBAR_SETTINGS, "settings.png", "Global settings")
+        addTB(ID_EDIT_FIND, "find.png", _("Find / Replace"))
+        addTB(ID_TOOLBAR_VIEWS, "layout.png", _("View mode"))
+        addTB(ID_TOOLBAR_REPORTS, "report.png", _("Script reports"))
+        addTB(ID_TOOLBAR_TOOLS, "tools.png", _("Tools"))
+        addTB(ID_TOOLBAR_SETTINGS, "settings.png", _("Global settings"))
 
         self.toolBar.SetBackgroundColour(cfgGui.tabBarBgColor)
         self.toolBar.Realize()
@@ -1842,7 +1855,7 @@ class MyFrame(wx.Frame):
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.noFSBtn = misc.MyFSButton(self, -1, getCfgGui)
-        self.noFSBtn.SetToolTipString("Exit fullscreen")
+        self.noFSBtn.SetToolTipString(_("Exit fullscreen"))
         self.noFSBtn.Show(False)
         hsizer.Add(self.noFSBtn)
 
@@ -1875,24 +1888,24 @@ class MyFrame(wx.Frame):
         for m in (self.rightClickMenu, self.rightClickMenuWithCut):
             tmp = wx.Menu()
 
-            tmp.Append(ID_ELEM_TO_SCENE, "&Scene")
-            tmp.Append(ID_ELEM_TO_ACTION, "&Action")
-            tmp.Append(ID_ELEM_TO_CHARACTER, "&Character")
-            tmp.Append(ID_ELEM_TO_PAREN, "&Parenthetical")
-            tmp.Append(ID_ELEM_TO_DIALOGUE, "&Dialogue")
-            tmp.Append(ID_ELEM_TO_TRANSITION, "&Transition")
-            tmp.Append(ID_ELEM_TO_SHOT, "Sh&ot")
-            tmp.Append(ID_ELEM_TO_ACTBREAK, "Act &break")
-            tmp.Append(ID_ELEM_TO_NOTE, "&Note")
+            tmp.Append(ID_ELEM_TO_SCENE, _("&Scene"))
+            tmp.Append(ID_ELEM_TO_ACTION, _("&Action"))
+            tmp.Append(ID_ELEM_TO_CHARACTER, _("&Character"))
+            tmp.Append(ID_ELEM_TO_PAREN, _("&Parenthetical"))
+            tmp.Append(ID_ELEM_TO_DIALOGUE, _("&Dialogue"))
+            tmp.Append(ID_ELEM_TO_TRANSITION, _("&Transition"))
+            tmp.Append(ID_ELEM_TO_SHOT, _("Sh&ot"))
+            tmp.Append(ID_ELEM_TO_ACTBREAK, _("Act &break"))
+            tmp.Append(ID_ELEM_TO_NOTE, _("&Note"))
 
-            m.AppendSubMenu(tmp, "Element type")
+            m.AppendSubMenu(tmp, _("Element type"))
             m.AppendSeparator()
 
             if m is self.rightClickMenuWithCut:
-                m.Append(ID_EDIT_CUT, "Cut")
-                m.Append(ID_EDIT_COPY, "Copy")
+                m.Append(ID_EDIT_CUT, _("Cut"))
+                m.Append(ID_EDIT_COPY, _("Copy"))
 
-            m.Append(ID_EDIT_PASTE, "Paste")
+            m.Append(ID_EDIT_PASTE, _("Paste"))
 
         wx.EVT_MENU(self, ID_FILE_NEW, self.OnNewScript)
         wx.EVT_MENU(self, ID_FILE_OPEN, self.OnOpen)
@@ -2161,10 +2174,10 @@ class MyFrame(wx.Frame):
         cfgGl.addShiftKeys()
 
         if cfgGl.getConflictingKeys() != None:
-            wx.MessageBox("You have at least one key bound to more than one\n"
+            wx.MessageBox(_("You have at least one key bound to more than one\n"
                           "command. The program will not work correctly until\n"
-                          "you fix this.",
-                          "Warning", wx.OK, self)
+                          "you fix this."),
+                          _("Warning"), wx.OK, self)
 
         self.kbdCommands = {}
 
@@ -2194,10 +2207,10 @@ class MyFrame(wx.Frame):
 
         if failed:
             wx.MessageBox(
-                "The fonts listed below are not fixed width and\n"
+                _("The fonts listed below are not fixed width and\n"
                 "will cause the program not to function correctly.\n"
-                "Please change the fonts at File/Settings/Change.\n\n"
-                + "\n".join(failed), "Error", wx.OK, self)
+                "Please change the fonts at File/Settings/Change.\n\n")
+                + "\n".join(failed), _("Error"), wx.OK, self)
 
     # If we get focus, pass it on to ctrl.
     def OnFocus(self, event):
@@ -2249,7 +2262,7 @@ class MyFrame(wx.Frame):
         self.openScript(gd.mru.get(i))
 
     def OnOpen(self, event = None):
-        dlg = wx.FileDialog(self, "File to open",
+        dlg = wx.FileDialog(self, _("File to open"),
             misc.scriptDir,
             wildcard = "Trelby files (*.trelby)|*.trelby|All files|*",
             style = wx.OPEN)
@@ -2267,7 +2280,7 @@ class MyFrame(wx.Frame):
         self.panel.ctrl.OnSaveScriptAs()
 
     def OnImportScript(self, event = None):
-        dlg = wx.FileDialog(self, "File to import",
+        dlg = wx.FileDialog(self, _("File to import"),
             misc.scriptDir,
             wildcard = "Importable files (*.txt;*.fdx;*.celtx;*.astx;*.fountain;*.fadein)|" +
                        "*.fdx;*.txt;*.celtx;*.astx;*.fountain;*.fadein|" +
@@ -2522,7 +2535,7 @@ class MyFrame(wx.Frame):
 
     def OnNameDatabase(self, event = None):
         if not namesdlg.readNames(self):
-            wx.MessageBox("Error opening name database.", "Error",
+            wx.MessageBox(_("Error opening name database."), _("Error"),
                           wx.OK, self)
 
             return
@@ -2560,8 +2573,8 @@ class MyFrame(wx.Frame):
         doExit = True
         # TODO
         if (event.CanVeto() and self.isModifications()) or self.temporaryFile:
-            if wx.MessageBox("You have unsaved changes. Are\n"
-                             "you sure you want to exit?", "Confirm",
+            if wx.MessageBox(_("You have unsaved changes. Are\n"
+                             "you sure you want to exit?"), _("Confirm"),
                              wx.YES_NO | wx.NO_DEFAULT, self) == wx.NO:
                 
                 doExit = False
@@ -2593,11 +2606,12 @@ class MyApp(wx.App):
     def OnInit(self):
         global cfgGl, mainFrame, gd
 
+
         if (wx.MAJOR_VERSION != 3) or (wx.MINOR_VERSION != 0):
-            wx.MessageBox("You seem to have an invalid version\n"
-                          "(%s) of wxWidgets installed. This\n"
-                          "program needs version 3.0." %
-                          wx.VERSION_STRING, "Error", wx.OK)
+            wx.MessageBox(_("You seem to have an invalid version\n")
+                          + "(%s) % wx.VERSION_STRING" +
+                          _("of wxWidgets installed. This\n"
+                          "program needs version 3.0."), _("Error"), wx.OK)
             sys.exit()
 
         misc.init()
@@ -2608,21 +2622,21 @@ class MyApp(wx.App):
         if misc.isWindows:
             major = sys.getwindowsversion()[0]
             if major < 5:
-                wx.MessageBox("You seem to have a version of Windows\n"
+                wx.MessageBox(_("You seem to have a version of Windows\n"
                               "older than Windows 2000, which is the minimum\n"
-                              "requirement for this program.", "Error", wx.OK)
+                              "requirement for this program."), _("Error"), wx.OK)
                 sys.exit()
 
         if not "unicode" in wx.PlatformInfo:
-            wx.MessageBox("You seem to be using a non-Unicode build of\n"
-                          "wxWidgets. This is not supported.",
-                          "Error", wx.OK)
+            wx.MessageBox(_("You seem to be using a non-Unicode build of\n"
+                          "wxWidgets. This is not supported."),
+                          _("Error"), wx.OK)
             sys.exit()
 
         # by setting this, we don't have to convert from 8-bit strings to
         # Unicode ourselves everywhere when we pass them to wxWidgets.
-        wx.SetDefaultPyEncoding("ISO-8859-1")
-
+        #wx.SetDefaultPyEncoding("ISO-8859-1") # default
+        #wx.SetDefaultPyEncoding("UTF-8")
         os.chdir(misc.progPath)
 
         cfgGl = config.ConfigGlobal()

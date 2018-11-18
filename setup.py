@@ -3,8 +3,10 @@ from distutils.command.build_scripts import build_scripts as _build_scripts
 from distutils.command.bdist_rpm import bdist_rpm as _bdist_rpm
 from distutils.command.install_data import install_data as _install_data
 from distutils.core import Command
-from distutils.core import setup
+#from distutils.core import setup
 from distutils.util import convert_path
+
+from setuptools import setup, find_packages
 
 import fileinput
 import glob
@@ -129,6 +131,7 @@ options = {
 
 
 packageData = {"src": ["../resources/*",
+#      "../locales/base.pot",
       "../names.txt.gz",
       "../dict_en.dat.gz",
       "../sample.trelby",
@@ -148,7 +151,12 @@ if sys.platform == "win32":
     # of package_data.
     for path, files in packageData.iteritems():
         for file in files:
+            
             dataFile = os.path.normpath(os.path.join(path, file))
+            #if not os.path.isdir(dataFile):
+               # for f in glob.glob(dataFile):
+                    #if not os.path.isdir(f):
+                        #print "->", (os.path.dirname(dataFile),glob.glob(dataFile)), dataFile
             dataFiles.append((os.path.dirname(dataFile),glob.glob(dataFile)))
     packageData = {}
 
@@ -167,8 +175,14 @@ else:
         ]
     platformOptions = {}
 
+
+directories = glob.glob('locales/*/LC_MESSAGES/*.mo')
+for directory in directories:
+    files = glob.glob(directory+'*')
+    dataFiles.append((os.path.dirname(directory), files))
+
 setup(
-    name = "Trelby",
+    name="Trelby",
     cmdclass = {
         "build_scripts": build_scripts,
         "bdist_rpm": bdist_rpm,
@@ -177,41 +191,65 @@ setup(
     },
     version = misc.version,
     description = "Free, multiplatform, feature-rich screenwriting program",
+    packages=["src"],
+    data_files=dataFiles,
+    package_data = packageData,
+    author = "Osku Salerma",
+    author_email = "osku.salerma@gmail.com",
+    url = "http://www.trelby.org/",
+    license = "GPL",
+    scripts = ["bin/trelby"],
+    options = options,
+    **platformOptions
+)
 
-    long_description = """\
-Trelby is a simple, powerful, full-featured, multi-platform program for
-writing movie screenplays. It is simple, fast and elegantly laid out to
-make screenwriting simple, and it is infinitely configurable.
 
-Features:
 
- * Screenplay editor: Enforces correct script format and pagination,
-   auto-completion, and spell checking.
- * Multiplatform: Behaves identically on all platforms, generating the exact
-   same output.
- * Choice of view: Multiple views, including draft view, WYSIWYG mode,
-   and fullscreen to suit your writing style.
- * Name database: Character name database containing over 200,000 names
-   from various countries.
- * Reporting: Scene/location/character/dialogue reports.
- * Compare: Ability to compare scripts, so you know what changed between
-   versions.
- * Import: Screenplay formatted text, Final Draft XML (.fdx)
-    and Celtx (.celtx).
- * Export: PDF, formatted text, HTML, RTF, Final Draft XML (.fdx).
- * PDF: Built-in, highly configurable PDF generator. Supports embedding your
-   chosen font. Also supports generating PDFs with custom watermarks,
-   to help track shared files.
- * Free software: Licensed under the GPL, Trelby welcomes developers and
-   screenwriters to contribute in making it more useful.
-""",
-      author = "Osku Salerma",
-      author_email = "osku.salerma@gmail.com",
-      url = "http://www.trelby.org/",
-      license = "GPL",
-      packages = ["src"],
-      package_data = packageData,
-      data_files = dataFiles,
-      scripts = ["bin/trelby"],
-      options = options,
-      **platformOptions)
+# setup(
+#     name = "Trelby",
+#     cmdclass = {
+#         "build_scripts": build_scripts,
+#         "bdist_rpm": bdist_rpm,
+#         "install_data": install_data,
+#         "nsis": nsis,
+#     },
+#     version = misc.version,
+#     description = "Free, multiplatform, feature-rich screenwriting program",
+
+#     long_description = """\
+# Trelby is a simple, powerful, full-featured, multi-platform program for
+# writing movie screenplays. It is simple, fast and elegantly laid out to
+# make screenwriting simple, and it is infinitely configurable.
+
+# Features:
+
+#  * Screenplay editor: Enforces correct script format and pagination,
+#    auto-completion, and spell checking.
+#  * Multiplatform: Behaves identically on all platforms, generating the exact
+#    same output.
+#  * Choice of view: Multiple views, including draft view, WYSIWYG mode,
+#    and fullscreen to suit your writing style.
+#  * Name database: Character name database containing over 200,000 names
+#    from various countries.
+#  * Reporting: Scene/location/character/dialogue reports.
+#  * Compare: Ability to compare scripts, so you know what changed between
+#    versions.
+#  * Import: Screenplay formatted text, Final Draft XML (.fdx)
+#     and Celtx (.celtx).
+#  * Export: PDF, formatted text, HTML, RTF, Final Draft XML (.fdx).
+#  * PDF: Built-in, highly configurable PDF generator. Supports embedding your
+#    chosen font. Also supports generating PDFs with custom watermarks,
+#    to help track shared files.
+#  * Free software: Licensed under the GPL, Trelby welcomes developers and
+#    screenwriters to contribute in making it more useful.
+# """,
+#       author = "Osku Salerma",
+#       author_email = "osku.salerma@gmail.com",
+#       url = "http://www.trelby.org/",
+#       license = "GPL",
+#       packages = ["src"],
+#       package_data = packageData,
+#       data_files = dataFiles,
+#       scripts = ["bin/trelby"],
+#       options = options,
+#       **platformOptions)
