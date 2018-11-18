@@ -334,10 +334,10 @@ class MyCtrl(wx.Control):
     # generate exportable text from given screenplay, or None.
     def getExportText(self, sp):
         inf = []
-        inf.append(misc.CheckBoxItem("Include page markers"))
+        inf.append(misc.CheckBoxItem(_("Include page markers")))
 
-        dlg = misc.CheckBoxDlg(mainFrame, "Output options", inf,
-                               "Options:", False)
+        dlg = misc.CheckBoxDlg(mainFrame, _("Output options"), inf,
+                               _("Options:"), False)
 
         if dlg.ShowModal() != wx.ID_OK:
             dlg.Destroy()
@@ -348,10 +348,10 @@ class MyCtrl(wx.Control):
 
     def getExportHtml(self, sp):
         inf = []
-        inf.append(misc.CheckBoxItem("Include Notes"))
+        inf.append(misc.CheckBoxItem(_("Include Notes")))
 
-        dlg = misc.CheckBoxDlg(mainFrame, "Output options", inf,
-                               "Options:", False)
+        dlg = misc.CheckBoxDlg(mainFrame, _("Output options"), inf,
+                               _("Options:"), False)
 
         if dlg.ShowModal() != wx.ID_OK:
             dlg.Destroy()
@@ -967,9 +967,9 @@ class MyCtrl(wx.Control):
             if s in pages:
                 return ""
             else:
-                return "Invalid page number."
+                return _("Invalid page number.")
 
-        dlg = misc.TextInputDlg(mainFrame, "Enter page number (%s - %s):" %\
+        dlg = misc.TextInputDlg(mainFrame, _("Enter page number")+" (%s - %s):" %\
             (pages[0], pages[-1]), "Goto page", validateFunc)
 
         if dlg.ShowModal() == wx.ID_OK:
@@ -998,9 +998,9 @@ class MyCtrl(wx.Control):
             self.updateScreen()
 
         else:
-            msg = "No errors found."
+            msg = _("No errors found.")
 
-        wx.MessageBox(msg, "Results", wx.OK, mainFrame)
+        wx.MessageBox(msg, _("Results"), wx.OK, mainFrame)
 
     def OnFind(self):
         self.sp.clearMark()
@@ -1067,8 +1067,8 @@ class MyCtrl(wx.Control):
         for t in config.getTIs():
             types.append(misc.CheckBoxItem(t.name, False, t.lt))
 
-        dlg = misc.CheckBoxDlg(mainFrame, "Delete elements", types,
-                               "Element types to delete:", True)
+        dlg = misc.CheckBoxDlg(mainFrame, _("Delete elements"), types,
+                               _("Element types to delete:"), True)
 
         ok = False
         if dlg.ShowModal() == wx.ID_OK:
@@ -1338,8 +1338,10 @@ class MyCtrl(wx.Control):
             mainFrame.setTitle(self.panel.ctrl.fileNameDisplay + "*")
             mainFrame.setTabText(self.panel, self.panel.ctrl.fileNameDisplay + "*")
 
-        kc = ev.GetKeyCode()
-
+        #kc = ev.GetKeyCode()
+        kc = ev.GetUnicodeKey()
+        # TODO: accept Unicode chars
+        mainFrame.setTitle(self.panel.ctrl.fileNameDisplay + "*" + "(" + str(kc) + ")")
         cs = screenplay.CommandState()
         cs.mark = bool(ev.ShiftDown())
         scrollDirection = config.SCROLL_CENTER
@@ -1360,13 +1362,13 @@ class MyCtrl(wx.Control):
                     addChar = False
 
             if addChar:
-                cs.char = chr(kc)
+                cs.char = chr(kc) # unichr() ?
 
-                if opts.isTest and (cs.char == "�"):
+                if opts.isTest and (cs.char == "å"):
                     self.loadFile(u"sample.trelby")
-                elif opts.isTest and (cs.char == "�"):
+                elif opts.isTest and (cs.char == "¤"):
                     self.cmdTest(cs)
-                elif opts.isTest and (cs.char == "�"):
+                elif opts.isTest and (cs.char == "½"):
                     self.cmdSpeedTest(cs)
                 else:
                     self.sp.addCharCmd(cs)
@@ -1726,13 +1728,13 @@ class MyFrame(wx.Frame):
         editMenu.Append(ID_EDIT_PASTE, _("&Paste") + "\tCTRL-V")
         editMenu.AppendSeparator()
 
-        tmp = wx.Menu()
-        tmp.Append(ID_EDIT_COPY_TO_CB, _("&Unformatted"))
-        tmp.Append(ID_EDIT_COPY_TO_CB_FMT, _("&Formatted"))
+        #tmp = wx.Menu()
+        #tmp.Append(ID_EDIT_COPY_TO_CB, _("&Unformatted"))
+        #tmp.Append(ID_EDIT_COPY_TO_CB_FMT, _("&Formatted"))
 
-        editMenu.AppendMenu(ID_EDIT_COPY_SYSTEM, _("C&opy (system)"), tmp)
-        editMenu.Append(ID_EDIT_PASTE_FROM_CB, _("P&aste (system)"))
-        editMenu.AppendSeparator()
+        #editMenu.AppendMenu(ID_EDIT_COPY_SYSTEM, _("C&opy (system)"), tmp)
+        #editMenu.Append(ID_EDIT_PASTE_FROM_CB, _("P&aste (system)"))
+        #editMenu.AppendSeparator()
         editMenu.Append(ID_EDIT_SELECT_SCENE, _("&Select scene"))
         editMenu.Append(ID_EDIT_SELECT_ALL, _("Select a&ll"))
         editMenu.Append(ID_EDIT_GOTO_PAGE, _("&Goto page") + "...\tCTRL-G")
@@ -1926,9 +1928,9 @@ class MyFrame(wx.Frame):
         wx.EVT_MENU(self, ID_EDIT_CUT, self.OnCut)
         wx.EVT_MENU(self, ID_EDIT_COPY, self.OnCopy)
         wx.EVT_MENU(self, ID_EDIT_PASTE, self.OnPaste)
-        wx.EVT_MENU(self, ID_EDIT_COPY_TO_CB, self.OnCopySystemCb)
-        wx.EVT_MENU(self, ID_EDIT_COPY_TO_CB_FMT, self.OnCopySystemCbFormatted)
-        wx.EVT_MENU(self, ID_EDIT_PASTE_FROM_CB, self.OnPasteSystemCb)
+        #wx.EVT_MENU(self, ID_EDIT_COPY_TO_CB, self.OnCopySystemCb)
+        #wx.EVT_MENU(self, ID_EDIT_COPY_TO_CB_FMT, self.OnCopySystemCbFormatted)
+        #wx.EVT_MENU(self, ID_EDIT_PASTE_FROM_CB, self.OnPasteSystemCb)
         wx.EVT_MENU(self, ID_EDIT_SELECT_SCENE, self.OnSelectScene)
         wx.EVT_MENU(self, ID_EDIT_SELECT_ALL, self.OnSelectAll)
         wx.EVT_MENU(self, ID_EDIT_GOTO_PAGE, self.OnGotoPage)
@@ -2369,7 +2371,8 @@ class MyFrame(wx.Frame):
         self.panel.ctrl.OnCut()
 
     def OnCopy(self, event = None):
-        self.panel.ctrl.OnCopy()
+        #self.panel.ctrl.OnCopy() # TEST
+        self.panel.ctrl.OnCopySystem(formatted = True)
 
     def OnCopySystemCb(self, event = None):
         self.panel.ctrl.OnCopySystem(formatted = False)
@@ -2378,7 +2381,9 @@ class MyFrame(wx.Frame):
         self.panel.ctrl.OnCopySystem(formatted = True)
 
     def OnPaste(self, event = None):
-        self.panel.ctrl.OnPaste()
+         # TEST
+        #self.panel.ctrl.OnPaste()
+        self.panel.ctrl.OnPasteSystemCb()
 
     def OnPasteSystemCb(self, event = None):
         self.panel.ctrl.OnPasteSystemCb()

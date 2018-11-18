@@ -156,8 +156,8 @@ def isValidInputChar(kc):
     # [0x80, 0x9F] = unspecified control characters in ISO-8859-1, added
     # characters like euro etc in windows-1252. 0x7F = backspace, 0xA0 =
     # non-breaking space, 0xAD = soft hyphen.
-    return (kc >= 32) and (kc <= 255) and not\
-           ((kc >= 0x7F) and (kc < 0xA0)) and (kc != 0xAD)
+    return (kc >= 32) and (kc <= 255) and not ((kc >= 0x7F) and (kc < 0xA0)) and (kc != 0xAD)
+    #return not ((kc >= 0x7F) and (kc < 0xA0)) and (kc != 0xAD) # remove line-break!
 
 # return s with all non-valid input characters converted to valid input
 # characters, except form feeds, which are just deleted.
@@ -806,7 +806,8 @@ class Key:
     # construct from wx.KeyEvent
     @staticmethod
     def fromKE(ev):
-        return Key(ev.GetKeyCode(), ev.ControlDown(), ev.AltDown(),
+        return Key(ev.GetUnicodeKey(), ev.ControlDown(), ev.AltDown(),
+        #return Key(ev.GetKeyCode(), ev.ControlDown(), ev.AltDown(),
                    ev.ShiftDown())
 
     def toStr(self):

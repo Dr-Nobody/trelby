@@ -2954,6 +2954,7 @@ Generated with <a href="http://www.trelby.org">Trelby</a>.</p>
 
     # add character cs.char if it's a valid one.
     def addCharCmd(self, cs):
+        # TODO: accept Unicode chars
         char = cs.char
 
         if len(char) != 1:
